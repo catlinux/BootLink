@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Icono adaptativo de BootLink (Android 8 o superior): el sistema dibuja el fondo y el primer plano
+  por separado y los recorta con la forma de icono que tenga el lanzador del teléfono (círculo,
+  cuadrado redondeado, gota…), así que la forma final no la decide la app.
+
+  Esta carpeta (anydpi-v26) es la única que hace falta porque el proyecto tiene minSdk 26: no hay
+  ninguna versión de Android que use el icono y no pase por aquí, y por eso no hay copias en PNG.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>

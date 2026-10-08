@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Variante redonda del icono adaptativo de BootLink. Es idéntica a ic_launcher.xml porque en un
+  icono adaptativo la forma ya la pone el lanzador: el manifiesto la declara en android:roundIcon
+  para los lanzadores que piden aparte el icono redondo.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>

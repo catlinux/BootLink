@@ -5,6 +5,17 @@ y versionado según [SemVer](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+## [0.4.2] - 2026-10-08
+
+### Añadido
+
+- Icono propio de BootLink, con el mismo rayo blanco que usan las notificaciones sobre tres
+  cuadrados redondeados translúcidos (las apps que el rayo enciende al arrancar) y un fondo con
+  degradado morado e índigo. Se declara como icono adaptativo de Android
+  (`mipmap-anydpi-v26/ic_launcher.xml` y `ic_launcher_round.xml`, con las capas del degradado y del
+  rayo en `drawable/`), así que el lanzador del teléfono decide la forma final —círculo, cuadrado
+  redondeado, gota…— y la app deja de llevar el icono genérico del sistema.
+
 ## [0.4.1] - 2026-10-08
 
 ### Corregido

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Capa de fondo del icono adaptativo de BootLink: el degradado morado/índigo del icono, de
+  #7C5CF0 en la esquina superior izquierda a #3B1F8B en la inferior derecha.
+
+  El lienzo es de 108x108dp, el tamaño estándar de un icono adaptativo. El sistema recorta esta
+  capa con la forma que use el lanzador (círculo, cuadrado redondeado, gota…) y solo garantiza que
+  se vea el cuadrado central de 72x72dp, así que el degradado cubre el lienzo entero y no puede
+  quedar ningún borde transparente al recortarlo.
+
+  El degradado va en un <aapt:attr>, la única forma de dar color con degradado a un VectorDrawable,
+  y necesita API 24: como el proyecto tiene minSdk 26, esta única versión del archivo basta.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endColor="#FF3B1F8B"
+                android:endX="108"
+                android:endY="108"
+                android:startColor="#FF7C5CF0"
+                android:startX="0"
+                android:startY="0"
+                android:type="linear" />
+        </aapt:attr>
+    </path>
+</vector>
