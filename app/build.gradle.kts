@@ -20,8 +20,8 @@ android {
         applicationId = "com.catlinux.bootlink"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.3.0"
     }
 
     buildTypes {
@@ -63,6 +63,13 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.tooling.preview)
     debugImplementation(libs.androidx.ui.tooling)
+
+    // Navegación entre la lista de apps y el selector.
+    implementation(libs.androidx.navigation.compose)
+
+    // El ViewModel que guarda el estado de las pantallas y el estado ligado al ciclo de vida.
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     // Capa de datos: la lista de apps y el modo de arranque viven en DataStore, en JSON.
     implementation(libs.androidx.datastore.preferences)

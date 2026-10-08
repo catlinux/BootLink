@@ -4,26 +4,31 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.catlinux.bootlink.ui.BootLinkViewModel
+import com.catlinux.bootlink.ui.pantallas.ListaPantalla
+import com.catlinux.bootlink.ui.pantallas.SelectorPantalla
 import com.catlinux.bootlink.ui.tema.TemaBootLink
 
+/** Rutas del grafo de navegación. Son nombres fijos: ninguna lleva argumentos todavía. */
+private object Rutas {
+    /** Pantalla principal: la lista de apps que se lanzan al arrancar. */
+    const val LISTA = "lista"
+
+    /** Selector de aplicaciones instaladas, al que se llega con el botón de añadir. */
+    const val SELECTOR = "selector"
+}
+
 /**
- * Pantalla principal de la app.
+ * Actividad única de BootLink.
  *
- * En esta primera tarea solo está el andamiaje: se muestra el nombre de la app y un aviso
- * temporal. Cuando exista el selector de aplicaciones, este aviso desaparecerá.
+ * Solo prepara el tema y el grafo de navegación; el contenido de cada pantalla vive en
+ * `ui.pantallas`. El estado se pide a un único [BootLinkViewModel] compartido por las dos
+ * pantallas, para que volver del selector no vuelva a leer DataStore.
  */
 class MainActivity : ComponentActivity() {
 
@@ -33,42 +38,36 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TemaBootLink {
-                PantallaInicio()
+                NavegacionBootLink()
             }
         }
     }
 }
 
-/** Pantalla inicial vacía: aún no hay ninguna app configurada para lanzar. */
+/**
+ * Grafo de navegación de la app: empieza en la lista y desde ahí se puede ir al selector.
+ *
+ * El ViewModel se crea aquí, fuera de las pantallas, así que es el mismo objeto para todo el
+ * grafo: lo que se añade en el selector aparece ya en la lista al volver.
+ */
 @Composable
-private fun PantallaInicio(modifier: Modifier = Modifier) {
-    Scaffold(modifier = modifier.fillMaxSize()) { espacioInterior ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(espacioInterior),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(
-                space = 8.dp,
-                alignment = Alignment.CenterVertically,
-            ),
-        ) {
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineMedium,
-            )
-            Text(
-                text = stringResource(R.string.inicio_sin_apps),
-                style = MaterialTheme.typography.bodyLarge,
+private fun NavegacionBootLink() {
+    val modelo: BootLinkViewModel = viewModel()
+    val controlador = rememberNavController()
+
+    NavHost(navController = controlador, startDestination = Rutas.LISTA) {
+        composable(route = Rutas.LISTA) {
+            ListaPantalla(
+                modelo = modelo,
+                alPulsarAnadir = { controlador.navigate(Rutas.SELECTOR) },
             )
         }
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-private fun VistaPreviaPantallaInicio() {
-    TemaBootLink {
-        PantallaInicio()
+        composable(route = Rutas.SELECTOR) {
+            SelectorPantalla(
+                modelo = modelo,
+                alVolver = { controlador.popBackStack() },
+            )
+        }
     }
 }

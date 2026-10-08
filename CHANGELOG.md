@@ -5,6 +5,24 @@ y versionado según [SemVer](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+## [0.3.0] - 2026-10-08
+
+### Añadido
+
+- Interfaz de la app con Jetpack Compose y Navigation Compose: la pantalla principal muestra la
+  lista de apps configuradas y el selector de aplicaciones instaladas, y se navega entre las dos
+  con el botón flotante de añadir y la flecha de volver.
+- En la lista, cada app configurada se puede reordenar con los botones de subir y bajar, activar y
+  desactivar con un interruptor, quitar y ajustar su retardo en milisegundos. Si una app
+  configurada ya no está instalada se sigue viendo, con su paquete como nombre, y se puede quitar
+  igualmente; cuando no hay ninguna, la pantalla explica que aún no hay apps configuradas en lugar
+  de quedarse en blanco.
+- El selector lista las aplicaciones instaladas lanzables con su icono y su nombre, con un buscador
+  que filtra por nombre sin distinguir mayúsculas y minúsculas, marca las que ya están en la lista
+  y añade la elegida al final, volviendo a la pantalla principal.
+- `BootLinkViewModel` es el único punto que habla con la capa de datos y con el sistema: las
+  pantallas de Compose no instancian DataStore ni PackageManager.
+
 ## [0.2.0] - 2026-10-08
 
 ### Añadido
