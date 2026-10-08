@@ -1,26 +1,28 @@
 # Pendiente
 
+Las seis tareas del plan inicial (andamiaje, datos, arranque, interfaz, ajustes y
+diagnóstico) están completas: BootLink ya compila, arranca con el teléfono y lanza
+las apps configuradas con las dos estrategias. Falta probarlo en un dispositivo real.
+
 ## Prioridad alta
 
-- Andamiaje del proyecto Gradle con Compose.
-- Capa de datos: modelos, DataStore y consulta de apps lanzables.
-- Selector visual de apps y lista configurable.
-- Arranque: receptor, servicio y las dos estrategias de lanzamiento.
+- Probar en un teléfono real: reiniciar y comprobar que se abren las apps elegidas,
+  en modo notificación y en modo automático.
+- Icono propio de la aplicación (hoy usa el icono por defecto de Android Studio).
 
 ## Prioridad media
 
-- Ajustes (modo de arranque, retardos) y pantalla de diagnóstico.
-- Documentación de instalación y uso.
+- Comprobar el aviso de fabricante (Xiaomi/Huawei/Oppo/Samsung) en un teléfono de
+  cada marca si se puede: los Intents a los ajustes propios no están verificados
+  en dispositivo real, solo revisados en el código.
 
 ## Prioridad baja
 
-- Publicación en Google Play: ficha, política de privacidad y firma.
-- Icono propio de la aplicación.
+- Publicación en Google Play: ficha, política de privacidad y firma de la app.
 
 ## Decisiones pendientes del usuario
 
-- Licencia del proyecto (sin `LICENSE` es «todos los derechos reservados»).
-- Primer push al remoto de GitHub.
+- Nada pendiente de licencia ni de push: ya resuelto.
 
 ## Descartado
 
