@@ -10,6 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.catlinux.bootlink.ui.BootLinkViewModel
+import com.catlinux.bootlink.ui.pantallas.AjustesPantalla
+import com.catlinux.bootlink.ui.pantallas.DiagnosticoPantalla
 import com.catlinux.bootlink.ui.pantallas.ListaPantalla
 import com.catlinux.bootlink.ui.pantallas.SelectorPantalla
 import com.catlinux.bootlink.ui.tema.TemaBootLink
@@ -21,14 +23,20 @@ private object Rutas {
 
     /** Selector de aplicaciones instaladas, al que se llega con el botón de añadir. */
     const val SELECTOR = "selector"
+
+    /** Ajustes: el modo de arranque (aviso o automático). */
+    const val AJUSTES = "ajustes"
+
+    /** Diagnóstico: los permisos que faltan y los avisos del fabricante. */
+    const val DIAGNOSTICO = "diagnostico"
 }
 
 /**
  * Actividad única de BootLink.
  *
  * Solo prepara el tema y el grafo de navegación; el contenido de cada pantalla vive en
- * `ui.pantallas`. El estado se pide a un único [BootLinkViewModel] compartido por las dos
- * pantallas, para que volver del selector no vuelva a leer DataStore.
+ * `ui.pantallas`. El estado se pide a un único [BootLinkViewModel] compartido por las cuatro
+ * pantallas, para que navegar entre ellas no vuelva a leer DataStore.
  */
 class MainActivity : ComponentActivity() {
 
@@ -45,10 +53,12 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * Grafo de navegación de la app: empieza en la lista y desde ahí se puede ir al selector.
+ * Grafo de navegación de la app: empieza en la lista y desde ahí se puede ir al selector, a los
+ * ajustes y al diagnóstico.
  *
  * El ViewModel se crea aquí, fuera de las pantallas, así que es el mismo objeto para todo el
- * grafo: lo que se añade en el selector aparece ya en la lista al volver.
+ * grafo: lo que se añade en el selector aparece ya en la lista al volver, y el modo elegido en los
+ * ajustes lo ve el diagnóstico al instante.
  */
 @Composable
 private fun NavegacionBootLink() {
@@ -60,11 +70,27 @@ private fun NavegacionBootLink() {
             ListaPantalla(
                 modelo = modelo,
                 alPulsarAnadir = { controlador.navigate(Rutas.SELECTOR) },
+                alAbrirAjustes = { controlador.navigate(Rutas.AJUSTES) },
+                alAbrirDiagnostico = { controlador.navigate(Rutas.DIAGNOSTICO) },
             )
         }
 
         composable(route = Rutas.SELECTOR) {
             SelectorPantalla(
+                modelo = modelo,
+                alVolver = { controlador.popBackStack() },
+            )
+        }
+
+        composable(route = Rutas.AJUSTES) {
+            AjustesPantalla(
+                modelo = modelo,
+                alVolver = { controlador.popBackStack() },
+            )
+        }
+
+        composable(route = Rutas.DIAGNOSTICO) {
+            DiagnosticoPantalla(
                 modelo = modelo,
                 alVolver = { controlador.popBackStack() },
             )

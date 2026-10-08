@@ -5,6 +5,29 @@ y versionado según [SemVer](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+## [0.4.0] - 2026-10-08
+
+### Añadido
+
+- Pantalla de ajustes, a la que se llega con el icono de ajustes de la barra superior de la lista:
+  elige entre avisar con una notificación al arrancar y abrir las apps automáticamente. El modo se
+  guarda en cuanto se elige, sin bloquear la elección si falta algún permiso.
+- Aviso en la propia pantalla de ajustes cuando se elige el modo automático y todavía no está
+  concedido el permiso de superposición, con un botón que abre la pantalla del sistema donde se
+  concede. Al volver de los ajustes del sistema, el aviso se actualiza solo.
+- Pantalla de diagnóstico, a la que se llega con el icono de diagnóstico de la barra superior de la
+  lista: comprueba el permiso de notificaciones (en Android 13 o superior) y el de superposición
+  (solo si el modo guardado es el automático), explica en palabras qué falta y ofrece un botón para
+  arreglarlo.
+- Aviso del fabricante en el diagnóstico: en Xiaomi, Huawei, Oppo (y sus marcas derivadas) y
+  Samsung se explica que su sistema suele cerrar las apps que se abren solas y se ofrece abrir sus
+  ajustes propios de inicio automático o de batería. Si esa pantalla no existe en el teléfono, se
+  abre la ficha de BootLink en los ajustes del sistema.
+- `util.Fabricante` reconoce la marca a partir de `Build.MANUFACTURER` y `util.AjustesDelSistema`
+  reúne los Intents que llevan a los ajustes de notificaciones, de superposición, de la ficha de la
+  app y a los propios de cada fabricante, para que las pantallas de Compose no conozcan ni paquetes
+  ni componentes del sistema.
+
 ## [0.3.0] - 2026-10-08
 
 ### Añadido

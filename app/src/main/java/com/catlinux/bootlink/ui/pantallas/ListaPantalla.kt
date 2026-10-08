@@ -12,9 +12,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -52,13 +54,16 @@ private const val MAX_DIGITOS_RETARDO = 6
  * Pantalla principal de BootLink: las apps que se lanzarán al arrancar el teléfono, en su orden.
  *
  * Cada fila se puede reordenar, activar o desactivar, quitar y ajustar su retardo. El botón
- * flotante lleva al selector para añadir apps nuevas.
+ * flotante lleva al selector para añadir apps nuevas, y la barra de arriba a los ajustes (el modo de
+ * arranque) y al diagnóstico (los permisos que falten).
  *
  * La pantalla no habla con DataStore ni con PackageManager: lee el estado de [modelo] y le pide
  * los cambios a él.
  *
  * @param modelo estado de la aplicación y operaciones sobre la lista.
  * @param alPulsarAnadir qué hacer al pulsar el botón de añadir (abrir el selector).
+ * @param alAbrirAjustes qué hacer al pulsar el icono de ajustes.
+ * @param alAbrirDiagnostico qué hacer al pulsar el icono de diagnóstico.
  * @param modifier modificador que se aplica al andamiaje de la pantalla.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,6 +71,8 @@ private const val MAX_DIGITOS_RETARDO = 6
 fun ListaPantalla(
     modelo: BootLinkViewModel,
     alPulsarAnadir: () -> Unit,
+    alAbrirAjustes: () -> Unit,
+    alAbrirDiagnostico: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val apps by modelo.appsConfiguradas.collectAsStateWithLifecycle()
@@ -80,7 +87,25 @@ fun ListaPantalla(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { TopAppBar(title = { Text(text = stringResource(R.string.app_name)) }) },
+        topBar = {
+            TopAppBar(
+                title = { Text(text = stringResource(R.string.app_name)) },
+                actions = {
+                    IconButton(onClick = alAbrirDiagnostico) {
+                        Icon(
+                            imageVector = Icons.Filled.Build,
+                            contentDescription = stringResource(R.string.lista_diagnostico),
+                        )
+                    }
+                    IconButton(onClick = alAbrirAjustes) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = stringResource(R.string.lista_ajustes),
+                        )
+                    }
+                },
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = alPulsarAnadir) {
                 Icon(

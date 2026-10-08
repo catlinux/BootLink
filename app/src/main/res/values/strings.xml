@@ -10,6 +10,8 @@
     <string name="lista_bajar">Bajar</string>
     <string name="lista_quitar">Quitar</string>
     <string name="lista_retardo_etiqueta">Retardo (ms)</string>
+    <string name="lista_ajustes">Ajustes</string>
+    <string name="lista_diagnostico">Diagnóstico</string>
     <string name="lista_no_instalada">Ya no está instalada en el teléfono</string>
     <!-- Pantalla del selector: las apps instaladas que se pueden añadir a la lista. -->
     <string name="selector_titulo">Añadir aplicación</string>
@@ -19,6 +21,33 @@
     <string name="selector_sin_resultados">Ninguna aplicación instalada coincide con esa búsqueda</string>
     <string name="selector_ya_anadida">Ya añadida</string>
     <string name="volver">Volver</string>
+    <!-- Pantalla de ajustes: cómo se abren las apps al arrancar el teléfono. -->
+    <string name="ajustes_titulo">Ajustes</string>
+    <string name="ajustes_modo_explicacion">Elige qué hace BootLink cuando el teléfono termina de arrancar. El cambio se guarda en cuanto lo eliges.</string>
+    <string name="ajustes_modo_notificacion_titulo">Avisarme con una notificación</string>
+    <string name="ajustes_modo_notificacion_descripcion">Al arrancar el teléfono se publica una notificación; las apps se abren cuando la tocas. No necesita ningún permiso y funciona en cualquier marca.</string>
+    <string name="ajustes_modo_automatico_titulo">Abrirlas automáticamente</string>
+    <string name="ajustes_modo_automatico_descripcion">Las apps se abren solas al arrancar. Necesita el permiso de «aparecer encima de otras apps».</string>
+    <string name="ajustes_superposicion_titulo">Falta el permiso de superposición</string>
+    <string name="ajustes_superposicion_descripcion">El modo automático necesita que BootLink pueda aparecer encima de otras apps. Hasta que lo concedas se seguirá avisando con una notificación.</string>
+    <string name="ajustes_superposicion_boton">Conceder el permiso</string>
+    <!-- Pantalla de diagnóstico: qué le falta a BootLink para funcionar del todo. -->
+    <string name="diagnostico_titulo">Diagnóstico</string>
+    <string name="diagnostico_intro">Comprobación de los permisos y de los ajustes del teléfono que pueden impedir que BootLink abra tus apps.</string>
+    <string name="diagnostico_notificaciones_titulo">Permiso de notificaciones</string>
+    <string name="diagnostico_notificaciones_no_hacen_falta">Esta versión de Android no necesita este permiso.</string>
+    <string name="diagnostico_notificaciones_ok">Concedido: BootLink puede avisarte de que el teléfono ha arrancado.</string>
+    <string name="diagnostico_notificaciones_pendiente">Sin él no verás el aviso de arranque ni el de BootLink abriendo tus apps.</string>
+    <string name="diagnostico_notificaciones_boton">Conceder el permiso</string>
+    <string name="diagnostico_superposicion_titulo">Permiso de superposición</string>
+    <string name="diagnostico_superposicion_ok">Concedido: el modo automático puede abrir las apps.</string>
+    <string name="diagnostico_superposicion_pendiente">Lo necesita el modo automático. Hasta que lo concedas, BootLink avisará con una notificación.</string>
+    <string name="diagnostico_superposicion_boton">Conceder el permiso</string>
+    <string name="diagnostico_fabricante_titulo">Ajustes de %1$s</string>
+    <string name="diagnostico_fabricante_detalle">Este teléfono es de %1$s, y su sistema suele cerrar las apps que se abren solas para ahorrar batería. Hay que permitir el inicio automático de BootLink en sus propios ajustes.</string>
+    <string name="diagnostico_fabricante_boton">Abrir los ajustes de %1$s</string>
+    <string name="diagnostico_fabricante_titulo_ok">Ajustes del sistema de %1$s</string>
+    <string name="diagnostico_fabricante_detalle_ok">No se conocen restricciones de arranque propias de esta marca. Si las apps no llegan a abrirse, revisa la batería y el inicio automático en los ajustes del sistema.</string>
     <!-- Avisos del arranque automático, los que ven los usuarios al encender el teléfono. -->
     <string name="arranque_canal_servicio">Arranque en curso</string>
     <string name="arranque_servicio_titulo">BootLink</string>
