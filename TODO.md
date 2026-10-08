@@ -31,6 +31,13 @@ las apps configuradas con las dos estrategias. Falta probarlo en un dispositivo 
 
 ## Descartado
 
+- "Minimizar tras abrir" (traer BootLink de vuelta a primer plano tras lanzar cada
+  app, para no dejarla en pantalla): Android no permite minimizar ni cerrar la tarea
+  de otra app desde fuera, por diseño de seguridad. Lo único posible sería lanzar y,
+  tras un margen, volver a traer BootLink (o el launcher) a primer plano, tapando la
+  app visualmente sin detener su proceso. El usuario lo descartó por ahora: prefiere
+  esperar una solución mejor en vez de ese parche parcial.
+
 - `QUERY_ALL_PACKAGES`: permiso restringido en Play que exige declaración con vídeo.
   Se usa `<queries>` con `CATEGORY_LAUNCHER`, que basta para el selector.
 - Requerir root o ADB: el objetivo es instalar y listo.
