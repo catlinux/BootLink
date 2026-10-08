@@ -18,7 +18,12 @@ las apps configuradas con las dos estrategias. Falta probarlo en un dispositivo 
 
 ## Prioridad baja
 
-- Publicación en Google Play: ficha, política de privacidad y firma de la app.
+- Publicación en Google Play: pendiente de comprobar si la cuenta de desarrollador de
+  Marc es anterior al 13-11-2023 (libraría del requisito de 12 testers durante 14 días
+  seguidos antes de producción). Si no lo es, hace falta reclutar testers o aparcarlo.
+  Falta también: ficha de Play, política de privacidad publicada en una URL, firma de
+  release propia (hoy solo existe el APK debug) y las declaraciones de permisos
+  sensibles (`SYSTEM_ALERT_WINDOW`, `specialUse`, ya justificado en el manifiesto).
 
 ## Decisiones pendientes del usuario
 
