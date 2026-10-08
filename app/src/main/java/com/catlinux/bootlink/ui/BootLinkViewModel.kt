@@ -86,9 +86,11 @@ class BootLinkViewModel(aplicacion: Application) : AndroidViewModel(aplicacion) 
 
     /**
      * Permisos y fabricante tal y como los ve el sistema ahora mismo. La pantalla de diagnóstico lo
-     * muestra entero y la de ajustes lo usa para avisar de que falta la superposición. Las dos lo
-     * vuelven a leer con [actualizarDiagnostico] cada vez que se vuelve a ellas, porque para
-     * conceder un permiso el usuario sale de la app y tarda un rato en volver.
+     * muestra entero; la de ajustes y la de la lista lo usan para avisar de lo que falta (la
+     * superposición y cualquier permiso pendiente respectivamente, con
+     * [EstadoDiagnostico.tienePermisosPendientes]). Las tres lo vuelven a leer con
+     * [actualizarDiagnostico] cada vez que se vuelve a ellas, porque para conceder un permiso el
+     * usuario sale de la app y tarda un rato en volver.
      */
     val diagnostico: StateFlow<EstadoDiagnostico> = _diagnostico.asStateFlow()
 
@@ -274,4 +276,17 @@ data class EstadoDiagnostico(
     val superposicionPermitida: Boolean,
     val fabricante: Fabricante,
     val nombreFabricante: String,
-)
+) {
+
+    /**
+     * true si con el modo guardado queda algún permiso sin conceder que impida arrancar las apps: el
+     * de notificaciones (Android 13 o superior) o, en el modo automático, el de superposición, que
+     * es el único que lo usa. Es la misma comprobación que detalla la pantalla de diagnóstico,
+     * resumida en una sola pregunta para que la pantalla principal pueda avisar sin repetirla.
+     *
+     * @param modo el modo de arranque guardado.
+     */
+    fun tienePermisosPendientes(modo: ModoArranque): Boolean =
+        (notificacionesExigidas && !notificacionesPermitidas) ||
+            (modo == ModoArranque.AUTOMATICO && !superposicionPermitida)
+}

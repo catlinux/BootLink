@@ -5,6 +5,24 @@ y versionado según [SemVer](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+## [0.4.1] - 2026-10-08
+
+### Corregido
+
+- El arranque automático no funcionaba en Android 16 y 17: el servicio en primer plano declaraba el
+  tipo `shortService`, que esos sistemas no permiten levantar desde un receptor de `BOOT_COMPLETED`,
+  así que `startForeground()` lanzaba
+  `android.app.ForegroundServiceStartNotAllowedException: FGS type shortService not allowed to start from BOOT_COMPLETED!`.
+  Ahora el servicio se declara como `specialUse` —el tipo que sí se admite desde `BOOT_COMPLETED`,
+  junto con `location`, `health`, `connectedDevice`, `remoteMessaging` y `systemExempted`—, con el
+  permiso `FOREGROUND_SERVICE_SPECIAL_USE` y la propiedad `PROPERTY_SPECIAL_USE_FGS_SUBTYPE` que
+  exige su justificación, y `startForeground()` pasa el tipo explícito del API 29 en adelante. Como
+  `specialUse` no tiene el límite de tiempo de `shortService`, el servicio sigue cerrándose solo en
+  cuanto termina.
+- La pantalla principal avisa de los permisos que falten: un aviso sobre la lista, que lleva al
+  diagnóstico al tocarlo y se vuelve a comprobar cada vez que la pantalla pasa a primer plano (no
+  solo al abrir la app), para que el usuario no tenga que entrar al diagnóstico por su cuenta.
+
 ## [0.4.0] - 2026-10-08
 
 ### Añadido

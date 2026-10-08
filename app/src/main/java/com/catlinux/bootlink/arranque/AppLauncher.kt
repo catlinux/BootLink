@@ -37,9 +37,8 @@ class AppLauncher(private val contexto: Context) {
      * Se llama al terminar el arranque del teléfono, desde [ServicioArranque].
      *
      * Lee la configuración y elige estrategia según el modo guardado. Los retardos configurados por
-     * el usuario son su responsabilidad: si la secuencia se alargara más de unos tres minutos, el
-     * servicio `shortService` que la hospeda se cierra solo (ver [ServicioArranque.onTimeout]) y las
-     * apps que falten no se abren.
+     * el usuario son su responsabilidad: la secuencia puede durar lo que sumen, porque el servicio
+     * `specialUse` que la hospeda (ver [ServicioArranque]) no tiene límite de tiempo.
      *
      * @return el desenlace de la estrategia elegida, o [ResultadoLanzamiento.NADA_QUE_LANZAR] si no
      *   hay ninguna app activa.

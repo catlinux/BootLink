@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -24,14 +25,17 @@ import kotlinx.coroutines.launch
  *
  * - Android da por bueno el trabajo que hace un servicio en primer plano tras el arranque, así que
  *   el sistema no mata a BootLink a mitad de la secuencia.
- * - El tipo declarado es `shortService`, el único pensado para una tarea corta que no se puede
- *   aplazar, y que junto con `specialUse` es lo que Android 15 permite lanzar desde un receptor de
- *   `BOOT_COMPLETED`. Los tipos `dataSync`, `camera`, `mediaPlayback`, `phoneCall`,
- *   `mediaProjection` y `microphone` provocarían `ForegroundServiceStartNotAllowedException`.
- *   `shortService` no necesita permiso de tipo propio: basta con `FOREGROUND_SERVICE`.
+ * - El tipo declarado es `specialUse`, que es lo que Android 16/17 permite lanzar desde un receptor
+ *   de `BOOT_COMPLETED`, junto con `location`, `health`, `connectedDevice`, `remoteMessaging` y
+ *   `systemExempted`. `shortService` NO está en esa lista (se creyó que sí y el arranque fallaba en
+ *   un dispositivo real con `ForegroundServiceStartNotAllowedException`), y `dataSync`, `camera`,
+ *   `mediaPlayback`, `phoneCall`, `mediaProjection` y `microphone` tampoco. `specialUse` exige el
+ *   permiso `FOREGROUND_SERVICE_SPECIAL_USE` y una justificación
+ *   (`android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE`) declarados en el manifiesto.
  *
  * El trabajo de verdad está en [AppLauncher]; aquí solo se le da un rato de primer plano y se
- * cierra el servicio en cuanto termina, para no acercarse al límite de unos tres minutos.
+ * cierra el servicio en cuanto termina. `specialUse` no impone un límite de tiempo, así que la
+ * secuencia puede durar lo que sumen los retardos configurados.
  */
 class ServicioArranque : Service() {
 
@@ -45,7 +49,18 @@ class ServicioArranque : Service() {
      */
     override fun onCreate() {
         super.onCreate()
-        startForeground(ID_NOTIFICACION, notificacion())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Del API 29 en adelante startForeground() acepta el tipo explícito, que es el que
+            // espera un servicio declarado con android:foregroundServiceType="specialUse".
+            startForeground(
+                ID_NOTIFICACION,
+                notificacion(),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+            )
+        } else {
+            // Antes del API 29 no existe esa sobrecarga y el sistema no conoce tipos de servicio.
+            startForeground(ID_NOTIFICACION, notificacion())
+        }
     }
 
     override fun onStartCommand(intencion: Intent?, opciones: Int, idArranque: Int): Int {
@@ -68,10 +83,14 @@ class ServicioArranque : Service() {
     }
 
     /**
-     * El `shortService` tiene un límite de unos tres minutos (retardos muy largos configurados por
-     * el usuario podrían agotarlo). El sistema avisa aquí antes de dar la app por parada, y lo único
-     * que hay que hacer es cerrar el servicio sin más. Esta variante es la de Android 14; en Android
-     * 15 el sistema llama a la de dos parámetros, que no delega en esta.
+     * Cierre de cortesía por si el sistema diera el servicio por agotado.
+     *
+     * Se mantiene a propósito aunque con `specialUse` el sistema no llame aquí: el plazo de unos
+     * tres minutos es exclusivo de `shortService`, que ya no se declara. Conservando las dos
+     * sobrecargas —la de un parámetro desde Android 14 y la de dos desde Android 15— el servicio se
+     * cierra de forma ordenada y deja el motivo en el registro si alguna versión futura le pusiera
+     * un límite de tiempo. Esta variante es la de Android 14; en Android 15 el sistema llama a la de
+     * dos parámetros, que no delega en esta.
      */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onTimeout(idArranque: Int) {

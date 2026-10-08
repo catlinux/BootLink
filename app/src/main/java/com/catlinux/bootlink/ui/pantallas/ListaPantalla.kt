@@ -1,5 +1,6 @@
 package com.catlinux.bootlink.ui.pantallas
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,7 +18,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -41,10 +44,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.catlinux.bootlink.R
 import com.catlinux.bootlink.datos.AppConfigurada
 import com.catlinux.bootlink.datos.AppInstalada
+import com.catlinux.bootlink.datos.ModoArranque
 import com.catlinux.bootlink.ui.BootLinkViewModel
 
 /** Dígitos que se admiten en el campo del retardo: hasta 999999 ms (algo más de 16 minutos). */
@@ -56,6 +61,10 @@ private const val MAX_DIGITOS_RETARDO = 6
  * Cada fila se puede reordenar, activar o desactivar, quitar y ajustar su retardo. El botón
  * flotante lleva al selector para añadir apps nuevas, y la barra de arriba a los ajustes (el modo de
  * arranque) y al diagnóstico (los permisos que falten).
+ *
+ * Si el diagnóstico ve que falta algún permiso, la lista lo avisa con una tarjeta sobre ella que
+ * lleva a esa pantalla al tocarla. El aviso se comprueba cada vez que la pantalla pasa a primer
+ * plano, porque los permisos se conceden fuera de la app y al volver el aviso se tiene que ir solo.
  *
  * La pantalla no habla con DataStore ni con PackageManager: lee el estado de [modelo] y le pide
  * los cambios a él.
@@ -77,10 +86,19 @@ fun ListaPantalla(
 ) {
     val apps by modelo.appsConfiguradas.collectAsStateWithLifecycle()
     val instaladas by modelo.appsInstaladas.collectAsStateWithLifecycle()
+    val modo by modelo.modoArranque.collectAsStateWithLifecycle()
+    val diagnostico by modelo.diagnostico.collectAsStateWithLifecycle()
 
     // El icono y el nombre visibles no se guardan: se leen del sistema. Se piden al abrir la
     // pantalla y, mientras llegan, las filas se pintan con el nombre del paquete.
     LaunchedEffect(Unit) { modelo.cargarAppsInstaladas() }
+
+    // Los permisos se conceden en los ajustes del sistema, así que al volver a esta pantalla se
+    // comprueban otra vez y el aviso aparece o desaparece sin reabrir la app.
+    LifecycleResumeEffect(Unit) {
+        modelo.actualizarDiagnostico()
+        onPauseOrDispose { }
+    }
 
     // Índice por paquete para no recorrer la lista entera de instaladas en cada fila.
     val catalogo = remember(instaladas) { instaladas.associateBy(AppInstalada::paquete) }
@@ -115,29 +133,88 @@ fun ListaPantalla(
             }
         },
     ) { espacioInterior ->
-        if (apps.isEmpty()) {
-            SinAppsConfiguradas(modifier = Modifier.padding(espacioInterior))
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(espacioInterior),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                itemsIndexed(items = apps, key = { _, app -> app.paquete }) { indice, app ->
-                    FilaApp(
-                        app = app,
-                        instalada = catalogo[app.paquete],
-                        puedeSubir = indice > 0,
-                        puedeBajar = indice < apps.lastIndex,
-                        alSubir = { modelo.reordenar(paquetesAlMover(apps, indice, indice - 1)) },
-                        alBajar = { modelo.reordenar(paquetesAlMover(apps, indice, indice + 1)) },
-                        alCambiarActiva = { activa -> modelo.cambiarActiva(app.paquete, activa) },
-                        alCambiarRetardo = { retardo -> modelo.cambiarRetardo(app.paquete, retardo) },
-                        alQuitar = { modelo.quitar(app.paquete) },
-                    )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(espacioInterior),
+        ) {
+            // El aviso solo sale si el diagnóstico ve algún permiso pendiente con el modo guardado.
+            if (diagnostico.tienePermisosPendientes(modo)) {
+                AvisoPermisosPendientes(
+                    alPulsar = alAbrirDiagnostico,
+                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                )
+            }
+            if (apps.isEmpty()) {
+                SinAppsConfiguradas(modifier = Modifier.weight(1f))
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    itemsIndexed(items = apps, key = { _, app -> app.paquete }) { indice, app ->
+                        FilaApp(
+                            app = app,
+                            instalada = catalogo[app.paquete],
+                            puedeSubir = indice > 0,
+                            puedeBajar = indice < apps.lastIndex,
+                            alSubir = { modelo.reordenar(paquetesAlMover(apps, indice, indice - 1)) },
+                            alBajar = { modelo.reordenar(paquetesAlMover(apps, indice, indice + 1)) },
+                            alCambiarActiva = { activa -> modelo.cambiarActiva(app.paquete, activa) },
+                            alCambiarRetardo = { retardo -> modelo.cambiarRetardo(app.paquete, retardo) },
+                            alQuitar = { modelo.quitar(app.paquete) },
+                        )
+                    }
                 }
+            }
+        }
+    }
+}
+
+/**
+ * Aviso de que falta algún permiso para que el arranque funcione del todo. Va sobre el color de
+ * aviso del tema y lleva al diagnóstico al tocarlo; no es un diálogo, así que la lista se puede
+ * seguir usando con él delante.
+ *
+ * @param alPulsar abre la pantalla de diagnóstico, desde la que se conceden los permisos.
+ * @param modifier modificador que se aplica a la tarjeta.
+ */
+@Composable
+private fun AvisoPermisosPendientes(
+    alPulsar: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = alPulsar),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+        ),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Warning,
+                contentDescription = null,
+            )
+            Column(modifier = Modifier.padding(start = 12.dp)) {
+                Text(
+                    text = stringResource(R.string.lista_aviso_permisos_titulo),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+                Text(
+                    text = stringResource(R.string.lista_aviso_permisos_texto),
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
         }
     }

@@ -13,15 +13,19 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!--
-      Servicio en primer plano que hace el trabajo del arranque. Desde Android 15, un receptor de
-      BOOT_COMPLETED solo puede levantar los tipos shortService y specialUse: los demás
-      (dataSync, camera, mediaPlayback, phoneCall, mediaProjection y microphone) provocan
-      ForegroundServiceStartNotAllowedException. El tipo declarado más abajo es shortService, que no
-      tiene permiso propio: FOREGROUND_SERVICE_SHORT_SERVICE no existe (los permisos por tipo son
-      FOREGROUND_SERVICE_DATA_SYNC, FOREGROUND_SERVICE_SPECIAL_USE, etc.), así que basta con este
-      permiso general.
+      Servicio en primer plano que hace el trabajo del arranque. Un receptor de BOOT_COMPLETED solo
+      puede levantar estos tipos: location, health, connectedDevice, remoteMessaging, systemExempted
+      y specialUse. shortService NO está en esa lista, al contrario de lo que se dio por supuesto al
+      escribir esto la primera vez: al declararlo, startForeground() lanzaba
+      ForegroundServiceStartNotAllowedException ('FGS type shortService not allowed to start from
+      BOOT_COMPLETED!') en Android 16 y 17. Los tipos dataSync, camera, mediaPlayback, phoneCall,
+      mediaProjection y microphone tampoco valen. El tipo declarado más abajo es specialUse, que a
+      diferencia de shortService exige su propio permiso además de este general.
     -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- Permiso propio del tipo specialUse (Android 14 o superior). No sustituye al anterior. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <!-- Ventanas superpuestas: es la vía del modo automático. El usuario lo concede a mano en los
          ajustes del sistema y la app lo comprueba en tiempo de ejecución antes de usarlo. -->
@@ -87,15 +91,21 @@
         </receiver>
 
         <!--
-          Servicio en primer plano que lee la configuración y lanza las apps. Es shortService: el
-          tipo permitido tras BOOT_COMPLETED desde Android 15, pensado para trabajo corto que no se
-          puede aplazar (se cierra él mismo en cuanto termina y avisa con onTimeout si se agota el
-          tiempo). No se exporta: solo lo arranca el receptor de la propia app.
+          Servicio en primer plano que lee la configuración y lanza las apps. Es specialUse: el tipo
+          que Android 16/17 sí permite levantar desde un receptor de BOOT_COMPLETED y que, a
+          diferencia de shortService, no tiene límite de tiempo (se cierra él mismo en cuanto
+          termina). La <property> de abajo es la justificación que specialUse obliga a declarar:
+          Google Play la revisa al publicar, pero no bloquea la instalación directa del APK. No se
+          exporta: solo lo arranca el receptor de la propia app.
         -->
         <service
             android:name=".arranque.ServicioArranque"
             android:exported="false"
-            android:foregroundServiceType="shortService" />
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Abre las aplicaciones que el usuario ha elegido justo después de que el teléfono termine de arrancar." />
+        </service>
     </application>
 
     <!--

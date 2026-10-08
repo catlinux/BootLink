@@ -13,6 +13,9 @@
     <string name="lista_ajustes">Ajustes</string>
     <string name="lista_diagnostico">Diagnóstico</string>
     <string name="lista_no_instalada">Ya no está instalada en el teléfono</string>
+    <!-- Aviso de la pantalla principal cuando el diagnóstico detecta que falta algún permiso. -->
+    <string name="lista_aviso_permisos_titulo">Faltan permisos para el arranque</string>
+    <string name="lista_aviso_permisos_texto">Toca aquí para ver en el diagnóstico qué falta y arreglarlo.</string>
     <!-- Pantalla del selector: las apps instaladas que se pueden añadir a la lista. -->
     <string name="selector_titulo">Añadir aplicación</string>
     <string name="selector_buscar">Buscar por nombre</string>
