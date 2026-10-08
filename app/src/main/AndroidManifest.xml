@@ -30,4 +30,17 @@
         </activity>
     </application>
 
+    <!--
+      Bloque <queries> en lugar del permiso restringido de Google Play que permite consultar
+      todos los paquetes instalados. Con la acción MAIN y la categoría LAUNCHER,
+      PackageManager.queryIntentActivities() devuelve exactamente las apps que tienen icono en
+      el menú de aplicaciones: justo las que ofrece el selector.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
 </manifest>

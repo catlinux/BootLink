@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     // Plugin del compilador de Compose, obligatorio desde Kotlin 2.0.
     alias(libs.plugins.kotlin.compose)
+    // Serialización a JSON de la lista de apps configuradas.
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -61,4 +63,12 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.tooling.preview)
     debugImplementation(libs.androidx.ui.tooling)
+
+    // Capa de datos: la lista de apps y el modo de arranque viven en DataStore, en JSON.
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.serialization.json)
+
+    // Pruebas unitarias que corren en la máquina, sin emulador ni teléfono.
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

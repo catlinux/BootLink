@@ -3,6 +3,9 @@
 #   - AGP 8.11.1: admite hasta la API 36, exige Gradle 8.13 o superior y JDK 17.
 #   - Kotlin 2.2.21: compatible con Gradle hasta 8.14 y con AGP hasta 8.11.1.
 #   - Compose BOM 2025.09.00: Compose 1.9.1, la generación que acompaña a Kotlin 2.2.
+#   - DataStore 1.1.7: última estable de la serie 1.1, compatible con compileSdk 36.
+#   - kotlinx.serialization 1.9.0 y kotlinx-coroutines-test 1.10.2: las líneas que
+#     acompañan a Kotlin 2.2.
 [versions]
 agp = "8.11.1"
 kotlin = "2.2.21"
@@ -10,6 +13,10 @@ coreKtx = "1.16.0"
 lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.10.1"
 composeBom = "2025.09.00"
+datastore = "1.1.7"
+kotlinxSerialization = "1.9.0"
+kotlinxCoroutinesTest = "1.10.2"
+junit = "4.13.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -21,7 +28,19 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 
+# Persistencia de la lista de apps y del modo de arranque. Nada de SharedPreferences.
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+
+# La lista configurada se guarda como JSON dentro de DataStore.
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
+# Pruebas unitarias de la capa de datos, sin dispositivo.
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+# Genera los serializadores de kotlinx.serialization en tiempo de compilación (sin reflexión).
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
