@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Variante oscura de la ventana: Android la usa cuando el sistema está en modo oscuro. -->
+    <style name="Theme.BootLink" parent="android:Theme.Material.NoActionBar" />
+</resources>

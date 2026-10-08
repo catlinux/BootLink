@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Reglas de copia de seguridad para Android 11 o inferior.
+  La app todavía no guarda nada, así que no se incluye ni se excluye ningún archivo.
+-->
+<full-backup-content />

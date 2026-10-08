@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Reglas de copia y transferencia de datos para Android 12 o superior (API 31+).
+  La app todavía no guarda nada; cuando existan las preferencias se decidirá aquí
+  qué se copia y qué no.
+-->
+<data-extraction-rules>
+    <cloud-backup />
+</data-extraction-rules>

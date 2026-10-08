@@ -1,0 +1,64 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    // Plugin del compilador de Compose, obligatorio desde Kotlin 2.0.
+    alias(libs.plugins.kotlin.compose)
+}
+
+android {
+    namespace = "com.catlinux.bootlink"
+    compileSdk = 36
+    // Google Play exige la API 36 para las apps nuevas desde el 31-08-2026.
+    // El SDK de esta máquina trae las build-tools 36.0.0 (AGP usaría las 35.0.0 por defecto).
+    buildToolsVersion = "36.0.0"
+
+    defaultConfig {
+        applicationId = "com.catlinux.bootlink"
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 1
+        versionName = "0.1.0"
+    }
+
+    buildTypes {
+        release {
+            // Todavía no hay nada que ofuscar: la app no usa reflexión ni serialización.
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        // Activa Jetpack Compose.
+        compose = true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+
+    // El BOM fija de una vez las versiones de todas las bibliotecas de Compose.
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
+}

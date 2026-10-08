@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Textos visibles de la app, en castellano. -->
+<resources>
+    <string name="app_name">BootLink</string>
+    <string name="inicio_sin_apps">Aún no hay apps configuradas</string>
+    <string name="inicio_descripcion">Aquí aparecerá la lista de aplicaciones que BootLink lanzará al arrancar el teléfono.</string>
+</resources>

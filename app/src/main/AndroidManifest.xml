@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Manifiesto de la app. En esta primera tarea solo se declara la activity principal:
+  los permisos (RECEIVE_BOOT_COMPLETED, SYSTEM_ALERT_WINDOW, POST_NOTIFICATIONS...) y los
+  receptores de arranque llegarán en las tareas siguientes.
+
+  Nunca se declarará el permiso restringido de Google Play que permite consultar todos los
+  paquetes instalados (exige una declaración con vídeo en la ficha de la tienda): el selector
+  usará <queries> con CATEGORY_LAUNCHER, que devuelve justo las apps lanzables.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.BootLink">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.BootLink">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
