@@ -4,4 +4,13 @@
     <string name="app_name">BootLink</string>
     <string name="inicio_sin_apps">Aún no hay apps configuradas</string>
     <string name="inicio_descripcion">Aquí aparecerá la lista de aplicaciones que BootLink lanzará al arrancar el teléfono.</string>
+    <!-- Avisos del arranque automático, los que ven los usuarios al encender el teléfono. -->
+    <string name="arranque_canal_servicio">Arranque en curso</string>
+    <string name="arranque_servicio_titulo">BootLink</string>
+    <string name="arranque_servicio_texto">Comprobando las apps que hay que abrir.</string>
+    <string name="arranque_canal_aviso">Aviso de arranque</string>
+    <string name="arranque_canal_aviso_descripcion">Avisa de que el teléfono ha arrancado y de que hay apps listas para abrirse.</string>
+    <string name="arranque_aviso_titulo">Tus apps están listas</string>
+    <string name="arranque_aviso_texto">El teléfono ha arrancado. Toca este aviso para abrir las apps que has configurado.</string>
+    <string name="arranque_superposicion_texto">BootLink está abriendo tus apps</string>
 </resources>

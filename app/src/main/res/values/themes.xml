@@ -6,4 +6,12 @@
       La variante oscura está en values-night/themes.xml.
     -->
     <style name="Theme.BootLink" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!--
+      Tema de LanzadorActivity, la actividad sin interfaz que abre las apps cuando el usuario
+      toca el aviso de arranque. Es translúcida para que no se vea ningún parpadeo sobre lo que
+      hubiera en pantalla, y no hereda del tema de la app porque esa actividad no usa Compose.
+    -->
+    <style name="Theme.BootLink.Lanzador" parent="@android:style/Theme.Translucent.NoTitleBar" />
+
 </resources>

@@ -22,6 +22,23 @@ y versionado según [SemVer](https://semver.org/lang/es/).
   bloque `<queries>` de MAIN/LAUNCHER en el manifiesto: no se declara el permiso restringido de
   Google Play que obliga a justificar la consulta de todos los paquetes con un vídeo, y
   `RepositorioApps` excluye la propia app y ordena el resultado por etiqueta.
+- Arranque automático al encender el teléfono, en el paquete `arranque`: `ReceptorArranque` atiende
+  `BOOT_COMPLETED`, `LOCKED_BOOT_COMPLETED` y `QUICKBOOT_POWERON` (con `RECEIVE_BOOT_COMPLETED`) y
+  levanta `ServicioArranque`, un servicio en primer plano de tipo `shortService` —el único que
+  Android 15 permite desde `BOOT_COMPLETED` junto con `specialUse`, y que se cierra solo antes de
+  agotar su tiempo—, declarado con el permiso `FOREGROUND_SERVICE`.
+- Lanzamiento de las apps configuradas con dos estrategias intercambiables tras una interfaz común
+  (`EstrategiaLanzamiento`), porque Android bloquea por defecto que una app en segundo plano abra
+  actividades de otras apps: de un toque, con una notificación que lleva un `PendingIntent` a
+  `LanzadorActivity` (una actividad sin interfaz, fuera del historial de tareas, que abre las apps
+  en cuanto el usuario toca el aviso; necesita `POST_NOTIFICATIONS` en Android 13 o superior y es
+  la vía sin permisos especiales), y automática, con una ventana `TYPE_APPLICATION_OVERLAY` que se
+  espera a ver visible antes de lanzar (`SYSTEM_ALERT_WINDOW`, exigido también desde Android 15);
+  si falta el permiso de superposición, si la ventana no llega a mostrarse o si el sistema no deja
+  levantar el servicio, se avisa con la notificación en lugar de fallar en silencio.
+- `AppLauncher` respeta el orden, el retardo y la marca de activa de cada app, omite sin romper la
+  secuencia las apps desinstaladas y no usa WorkManager ni AlarmManager: el disparador es el
+  receptor de arranque.
 
 ### Arreglado
 
