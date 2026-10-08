@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.first
 /**
  * Orquesta el lanzamiento de las apps configuradas al terminar de arrancar el teléfono.
  *
- * Es el único punto que conoce las dos formas de esquivar el bloqueo de Android a lanzar
+ * Es el único punto que conoce las tres formas de esquivar el bloqueo de Android a lanzar
  * actividades desde segundo plano ([EstrategiaLanzamiento]) y el único que abre las apps de
  * verdad. Si Google cambia las reglas, se toca aquí y en las estrategias, no en el resto de la app.
  *
@@ -56,9 +56,10 @@ class AppLauncher(private val contexto: Context) {
     /**
      * Abre las apps ahora mismo, sin estrategia ninguna.
      *
-     * La usa [LanzadorActivity] cuando el usuario toca la notificación de aviso: en ese momento
-     * BootLink ya está en primer plano y tiene ventana visible, así que el sistema sí permite
-     * lanzar las demás apps. Es la segunda mitad del modo de notificación.
+     * La usa [LanzadorActivity] cuando el usuario toca la notificación de aviso y
+     * [ConfirmacionActivity] cuando el usuario pulsa «Abrir» en el diálogo del modo de
+     * confirmación: en los dos casos BootLink ya está en primer plano y tiene ventana visible, así
+     * que el sistema sí permite lanzar las demás apps.
      *
      * @return [ResultadoLanzamiento.LANZADAS], o [ResultadoLanzamiento.NADA_QUE_LANZAR] si no hay
      *   apps activas.
@@ -74,28 +75,39 @@ class AppLauncher(private val contexto: Context) {
     }
 
     /**
-     * Estrategia que corresponde al modo guardado.
+     * Estrategia que corresponde al modo guardado: una por cada forma de arrancar.
      *
-     * El modo automático solo se intenta si el permiso de superposición está concedido **en este
-     * momento**: aunque se concediera antes, el usuario puede retirarlo, y sin él la ventana
-     * superpuesta no llega a mostrarse. En ese caso, y en cualquier modo distinto del automático,
-     * se avisa con una notificación en lugar de fallar en silencio.
+     * Los modos que necesitan el permiso de superposición ([ModoArranque.necesitaSuperposicion]: el
+     * de confirmación y el automático) solo se intentan si el permiso está concedido **en este
+     * momento**: aunque se concediera antes, el usuario puede retirarlo, y sin una ventana visible
+     * el sistema ignora el lanzamiento. En ese caso, y en el modo de aviso discreto, se avisa con
+     * una notificación en lugar de fallar en silencio.
      */
     private suspend fun estrategiaElegida(): EstrategiaLanzamiento {
         val modo = preferencias.modoArranque.first()
-        if (modo != ModoArranque.AUTOMATICO) {
-            Log.i(ETIQUETA_ARRANQUE, "Modo ${modo.name}: se avisa con una notificación.")
-            return EstrategiaNotificacion(contexto)
-        }
-        if (!Settings.canDrawOverlays(contexto)) {
+        if (modo.necesitaSuperposicion && !Settings.canDrawOverlays(contexto)) {
             Log.w(
                 ETIQUETA_ARRANQUE,
-                "Modo automático sin permiso de superposición: se recurre a la notificación.",
+                "Modo ${modo.name} sin permiso de superposición: se recurre a la notificación.",
             )
             return EstrategiaNotificacion(contexto)
         }
-        Log.i(ETIQUETA_ARRANQUE, "Modo ${modo.name}: se lanza con ventana superpuesta.")
-        return EstrategiaOverlay(contexto)
+        return when (modo) {
+            ModoArranque.NOTIFICACION -> {
+                Log.i(ETIQUETA_ARRANQUE, "Modo ${modo.name}: se avisa con una notificación.")
+                EstrategiaNotificacion(contexto)
+            }
+
+            ModoArranque.CONFIRMAR -> {
+                Log.i(ETIQUETA_ARRANQUE, "Modo ${modo.name}: se pregunta si abrir las apps.")
+                EstrategiaConfirmacion(contexto)
+            }
+
+            ModoArranque.AUTOMATICO -> {
+                Log.i(ETIQUETA_ARRANQUE, "Modo ${modo.name}: se lanza con ventana superpuesta.")
+                EstrategiaOverlay(contexto)
+            }
+        }
     }
 
     /** Apps configuradas y activas, en el orden guardado. */
@@ -108,8 +120,8 @@ class AppLauncher(private val contexto: Context) {
      * Abre las apps una detrás de otra.
      *
      * El filtro y el orden se repiten aquí a propósito: esta secuencia también se ejecuta desde
-     * [LanzadorActivity], que no pasa por [lanzarAlArrancar], y así el comportamiento es idéntico
-     * se entre por donde se entre.
+     * [LanzadorActivity] y [ConfirmacionActivity], que no pasan por [lanzarAlArrancar], y así el
+     * comportamiento es idéntico se entre por donde se entre.
      */
     private suspend fun lanzarEnSecuencia(apps: List<AppConfigurada>) {
         apps.filter { it.activa }

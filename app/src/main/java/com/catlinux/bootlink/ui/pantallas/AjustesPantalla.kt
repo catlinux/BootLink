@@ -38,9 +38,12 @@ import com.catlinux.bootlink.ui.BootLinkViewModel
 /**
  * Pantalla de ajustes de BootLink: cómo se abren las apps cuando el teléfono arranca.
  *
- * El modo se guarda en cuanto se elige, aunque falten permisos: si se elige el automático sin la
- * superposición concedida, se explica qué falta y se ofrece abrir los ajustes del sistema, pero la
- * elección no se bloquea (hasta que se conceda, el arranque seguirá avisando con una notificación).
+ * Hay tres modos: «Preguntar al arrancar» (el predeterminado, que enseña un diálogo al encender el
+ * teléfono), «Aviso discreto» (una notificación que el usuario toca) y «Automático» (las apps se
+ * abren solas). El modo se guarda en cuanto se elige, aunque falten permisos: si se elige uno de los
+ * que necesitan la superposición sin tenerla concedida, se explica qué falta y se ofrece abrir los
+ * ajustes del sistema, pero la elección no se bloquea (hasta que se conceda, el arranque seguirá
+ * avisando con una notificación).
  *
  * @param modelo estado de la aplicación y guardado de las preferencias.
  * @param alVolver qué hacer al pulsar la flecha de volver.
@@ -93,6 +96,13 @@ fun AjustesPantalla(
             )
 
             OpcionModo(
+                titulo = stringResource(R.string.ajustes_modo_confirmar_titulo),
+                descripcion = stringResource(R.string.ajustes_modo_confirmar_descripcion),
+                seleccionado = modo == ModoArranque.CONFIRMAR,
+                alElegir = { modelo.cambiarModoArranque(ModoArranque.CONFIRMAR) },
+            )
+
+            OpcionModo(
                 titulo = stringResource(R.string.ajustes_modo_notificacion_titulo),
                 descripcion = stringResource(R.string.ajustes_modo_notificacion_descripcion),
                 seleccionado = modo == ModoArranque.NOTIFICACION,
@@ -106,7 +116,10 @@ fun AjustesPantalla(
                 alElegir = { modelo.cambiarModoArranque(ModoArranque.AUTOMATICO) },
             )
 
-            if (modo == ModoArranque.AUTOMATICO && !estado.superposicionPermitida) {
+            // El aviso sale con los dos modos que necesitan superposición: el de confirmación (sin
+            // ella Android no deja abrir la actividad del diálogo desde segundo plano) y el
+            // automático (sin ella no se puede dibujar la ventana que abre las apps).
+            if (modo.necesitaSuperposicion && !estado.superposicionPermitida) {
                 AvisoSuperposicion(alConceder = { modelo.abrirAjustesSuperposicion() })
             }
         }
@@ -114,7 +127,7 @@ fun AjustesPantalla(
 }
 
 /**
- * Una de las dos formas de arrancar la app. Toda la fila es pulsable y el botón de radio solo marca
+ * Una de las tres formas de arrancar la app. Toda la fila es pulsable y el botón de radio solo marca
  * lo elegido (no recibe pulsaciones propias para no repetir la misma acción dos veces).
  *
  * @param titulo nombre del modo.
@@ -156,8 +169,8 @@ private fun OpcionModo(
 }
 
 /**
- * Aviso de que el modo automático necesita el permiso de superposición. Es un aviso, no un
- * impedimento: el modo ya está guardado y funcionará en cuanto se conceda el permiso.
+ * Aviso de que el modo elegido necesita el permiso de superposición. Es un aviso, no un impedimento:
+ * el modo ya está guardado y funcionará en cuanto se conceda el permiso.
  *
  * @param alConceder abre los ajustes del sistema en la pantalla de ese permiso.
  */

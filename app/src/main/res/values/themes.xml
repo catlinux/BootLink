@@ -14,4 +14,14 @@
     -->
     <style name="Theme.BootLink.Lanzador" parent="@android:style/Theme.Translucent.NoTitleBar" />
 
+    <!--
+      Tema de ConfirmacionActivity, la actividad del modo de confirmación. También es translúcida,
+      pero por otro motivo: aquí sí hay interfaz (Compose), y lo que se ve es el diálogo de Material
+      3 centrado, sin fondo de pantalla completa detrás. Así queda claro que hay una pregunta
+      esperando respuesta y no parece que la app haya ocupado la pantalla.
+      La variante oscura no hace falta: el diálogo toma sus colores del tema de Compose, que ya
+      sigue el modo oscuro del sistema.
+    -->
+    <style name="Theme.BootLink.Dialogo" parent="@android:style/Theme.Translucent.NoTitleBar" />
+
 </resources>

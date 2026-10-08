@@ -27,12 +27,15 @@
     <!-- Pantalla de ajustes: cómo se abren las apps al arrancar el teléfono. -->
     <string name="ajustes_titulo">Ajustes</string>
     <string name="ajustes_modo_explicacion">Elige qué hace BootLink cuando el teléfono termina de arrancar. El cambio se guarda en cuanto lo eliges.</string>
-    <string name="ajustes_modo_notificacion_titulo">Avisarme con una notificación</string>
-    <string name="ajustes_modo_notificacion_descripcion">Al arrancar el teléfono se publica una notificación; las apps se abren cuando la tocas. No necesita ningún permiso y funciona en cualquier marca.</string>
-    <string name="ajustes_modo_automatico_titulo">Abrirlas automáticamente</string>
-    <string name="ajustes_modo_automatico_descripcion">Las apps se abren solas al arrancar. Necesita el permiso de «aparecer encima de otras apps».</string>
+    <!-- Los tres modos, con una frase bajo cada uno que explica qué hace y qué permiso necesita. -->
+    <string name="ajustes_modo_confirmar_titulo">Preguntar al arrancar</string>
+    <string name="ajustes_modo_confirmar_descripcion">Al arrancar el teléfono aparece un aviso en el centro de la pantalla para abrir las apps o cancelar. Necesita el permiso de «aparecer encima de otras apps».</string>
+    <string name="ajustes_modo_notificacion_titulo">Aviso discreto</string>
+    <string name="ajustes_modo_notificacion_descripcion">Al arrancar el teléfono se publica una notificación; las apps se abren cuando la tocas. No necesita ningún permiso especial y funciona en cualquier marca.</string>
+    <string name="ajustes_modo_automatico_titulo">Automático</string>
+    <string name="ajustes_modo_automatico_descripcion">Las apps se abren solas al arrancar, con un aviso breve en pantalla. Necesita el permiso de «aparecer encima de otras apps».</string>
     <string name="ajustes_superposicion_titulo">Falta el permiso de superposición</string>
-    <string name="ajustes_superposicion_descripcion">El modo automático necesita que BootLink pueda aparecer encima de otras apps. Hasta que lo concedas se seguirá avisando con una notificación.</string>
+    <string name="ajustes_superposicion_descripcion">Los modos «Preguntar al arrancar» y «Automático» necesitan que BootLink pueda aparecer encima de otras apps. Hasta que lo concedas se seguirá avisando con una notificación.</string>
     <string name="ajustes_superposicion_boton">Conceder el permiso</string>
     <!-- Pantalla de diagnóstico: qué le falta a BootLink para funcionar del todo. -->
     <string name="diagnostico_titulo">Diagnóstico</string>
@@ -43,8 +46,8 @@
     <string name="diagnostico_notificaciones_pendiente">Sin él no verás el aviso de arranque ni el de BootLink abriendo tus apps.</string>
     <string name="diagnostico_notificaciones_boton">Conceder el permiso</string>
     <string name="diagnostico_superposicion_titulo">Permiso de superposición</string>
-    <string name="diagnostico_superposicion_ok">Concedido: el modo automático puede abrir las apps.</string>
-    <string name="diagnostico_superposicion_pendiente">Lo necesita el modo automático. Hasta que lo concedas, BootLink avisará con una notificación.</string>
+    <string name="diagnostico_superposicion_ok">Concedido: los modos «Preguntar al arrancar» y «Automático» pueden abrir las apps.</string>
+    <string name="diagnostico_superposicion_pendiente">Lo necesitan los modos «Preguntar al arrancar» y «Automático». Hasta que lo concedas, BootLink avisará con una notificación.</string>
     <string name="diagnostico_superposicion_boton">Conceder el permiso</string>
     <string name="diagnostico_fabricante_titulo">Ajustes de %1$s</string>
     <string name="diagnostico_fabricante_detalle">Este teléfono es de %1$s, y su sistema suele cerrar las apps que se abren solas para ahorrar batería. Hay que permitir el inicio automático de BootLink en sus propios ajustes.</string>
@@ -59,5 +62,10 @@
     <string name="arranque_canal_aviso_descripcion">Avisa de que el teléfono ha arrancado y de que hay apps listas para abrirse.</string>
     <string name="arranque_aviso_titulo">Tus apps están listas</string>
     <string name="arranque_aviso_texto">El teléfono ha arrancado. Toca este aviso para abrir las apps que has configurado.</string>
+    <!-- Diálogo del modo de confirmación: se muestra sin que el usuario toque nada. -->
+    <string name="arranque_confirmacion_titulo">El teléfono ha arrancado</string>
+    <string name="arranque_confirmacion_texto">BootLink puede abrir las aplicaciones que tienes configuradas. ¿Quieres abrirlas ahora?</string>
+    <string name="arranque_confirmacion_abrir">Abrir</string>
+    <string name="arranque_confirmacion_cancelar">Cancelar</string>
     <string name="arranque_superposicion_texto">BootLink está abriendo tus apps</string>
 </resources>

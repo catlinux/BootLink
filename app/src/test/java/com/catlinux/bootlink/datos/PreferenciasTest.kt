@@ -45,11 +45,13 @@ class PreferenciasTest {
     }
 
     @Test
-    fun sinNadaGuardadoNoHayAppsYElModoEsNotificacion() = runTest(despachador) {
+    fun sinNadaGuardadoNoHayAppsYElModoEsElDialogoDeConfirmacion() = runTest(despachador) {
         val preferencias = crearPreferencias()
 
         assertEquals(emptyList<AppConfigurada>(), preferencias.apps.first())
-        assertEquals(ModoArranque.NOTIFICACION, preferencias.modoArranque.first())
+        // El modo predeterminado es el de confirmación: pregunta antes de abrir nada.
+        assertEquals(ModoArranque.CONFIRMAR, preferencias.modoArranque.first())
+        assertEquals(ModoArranque.CONFIRMAR, ModoArranque.PREDETERMINADO)
     }
 
     @Test
@@ -190,7 +192,8 @@ class PreferenciasTest {
             datos[Preferencias.CLAVE_MODO] = "MODO_DE_UNA_VERSION_FUTURA"
         }
 
-        assertEquals(ModoArranque.NOTIFICACION, Preferencias(almacen).modoArranque.first())
+        assertEquals(ModoArranque.PREDETERMINADO, Preferencias(almacen).modoArranque.first())
+        assertEquals(ModoArranque.CONFIRMAR, Preferencias(almacen).modoArranque.first())
     }
 
     /**

@@ -40,7 +40,8 @@ class Preferencias(private val almacen: DataStore<Preferences>) {
 
     /**
      * Modo de arranque elegido. Si no hay nada guardado o el valor no se reconoce, devuelve
-     * [ModoArranque.PREDETERMINADO], que es el modo sin permisos.
+     * [ModoArranque.PREDETERMINADO], que es el modo de confirmación (el que pregunta antes de abrir
+     * nada).
      */
     val modoArranque: Flow<ModoArranque> = almacen.data.map { preferencias ->
         ModoArranque.desdeNombre(preferencias[CLAVE_MODO])
@@ -89,7 +90,7 @@ class Preferencias(private val almacen: DataStore<Preferences>) {
         guardar(reordenadas)
     }
 
-    /** Guarda el modo de arranque: notificación de un toque o lanzamiento automático. */
+    /** Guarda el modo de arranque: el diálogo, el aviso de un toque o el lanzamiento automático. */
     suspend fun guardarModoArranque(modo: ModoArranque) {
         almacen.edit { preferencias ->
             preferencias[CLAVE_MODO] = modo.name

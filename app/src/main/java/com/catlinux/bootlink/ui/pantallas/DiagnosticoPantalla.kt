@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.catlinux.bootlink.R
-import com.catlinux.bootlink.datos.ModoArranque
 import com.catlinux.bootlink.ui.BootLinkViewModel
 
 /**
@@ -40,8 +39,9 @@ import com.catlinux.bootlink.ui.BootLinkViewModel
  * Comprueba tres cosas, cada una con su estado y, si procede, su botón para arreglarla:
  *
  * - El permiso de notificaciones (Android 13 o superior), sin el cual no se ve el aviso de arranque.
- * - El permiso de superposición, solo si el modo guardado es el automático, porque es el único que
- *   lo usa.
+ * - El permiso de superposición, solo si el modo guardado es uno de los que lo necesitan («Preguntar
+ *   al arrancar» o «Automático»): los dos abren actividades desde el servicio de arranque, y sin
+ *   ventana superpuesta Android no las deja verse. El modo «Aviso discreto» no lo usa.
  * - La marca del teléfono, porque las capas propias de Xiaomi, Huawei, Oppo y Samsung cierran las
  *   apps en segundo plano: se avisa y se ofrece abrir los ajustes de esa marca.
  *
@@ -119,8 +119,9 @@ fun DiagnosticoPantalla(
                 alPulsarBoton = { modelo.abrirAjustesNotificaciones() },
             )
 
-            // Solo tiene sentido con el modo automático: es el único que usa la superposición.
-            if (modo == ModoArranque.AUTOMATICO) {
+            // Solo tiene sentido con los modos que usan la superposición: el de confirmación (la
+            // actividad del diálogo) y el automático (la ventana que abre las apps).
+            if (modo.necesitaSuperposicion) {
                 TarjetaDiagnostico(
                     titulo = stringResource(R.string.diagnostico_superposicion_titulo),
                     detalle = if (estado.superposicionPermitida) {
@@ -180,7 +181,7 @@ fun DiagnosticoPantalla(
  * color de aviso del tema, para que se distingan de un simple vistazo.
  *
  * @param titulo qué se comprueba.
- * @param detalle el estado, ya en palabras («Concedidas», «Sin él, el modo automático…»).
+ * @param detalle el estado, ya en palabras («Concedido», «Sin él, el modo automático…»).
  * @param correcto true si no hay nada que arreglar.
  * @param textoBoton texto del botón, o null si no hay nada que hacer.
  * @param alPulsarBoton abre los ajustes del sistema que resuelven lo que falta.

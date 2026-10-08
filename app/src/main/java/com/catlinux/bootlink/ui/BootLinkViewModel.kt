@@ -72,9 +72,10 @@ class BootLinkViewModel(aplicacion: Application) : AndroidViewModel(aplicacion) 
     val cargandoInstaladas: StateFlow<Boolean> = _cargandoInstaladas.asStateFlow()
 
     /**
-     * Modo de arranque guardado: aviso al usuario o lanzamiento automático. Es lo que elige la
-     * pantalla de ajustes y lo que mira la de diagnóstico para saber si el permiso de superposición
-     * hace falta.
+     * Modo de arranque guardado: preguntar con un diálogo, avisar con una notificación o lanzar las
+     * apps automáticamente. Es lo que elige la pantalla de ajustes y lo que mira la de diagnóstico (a
+     * través de [ModoArranque.necesitaSuperposicion]) para saber si el permiso de superposición hace
+     * falta.
      */
     val modoArranque: StateFlow<ModoArranque> = preferencias.modoArranque.stateIn(
         scope = viewModelScope,
@@ -165,9 +166,9 @@ class BootLinkViewModel(aplicacion: Application) : AndroidViewModel(aplicacion) 
     }
 
     /**
-     * Guarda el modo de arranque elegido. La falta de permisos no bloquea la elección: si el
-     * usuario elige el automático sin la superposición concedida, se le avisa y se le ofrece
-     * concederla, pero el modo queda guardado igualmente.
+     * Guarda el modo de arranque elegido. La falta de permisos no bloquea la elección: si el usuario
+     * elige uno de los modos que necesitan la superposición sin tenerla concedida, se le avisa y se le
+     * ofrece concederla, pero el modo queda guardado igualmente.
      */
     fun cambiarModoArranque(modo: ModoArranque) {
         viewModelScope.launch {
@@ -189,7 +190,7 @@ class BootLinkViewModel(aplicacion: Application) : AndroidViewModel(aplicacion) 
         abrirAjuste(AjustesDelSistema.intentNotificaciones(paquete))
     }
 
-    /** Abre la pantalla donde se concede el permiso de superposición del modo automático. */
+    /** Abre la pantalla donde se concede el permiso de superposición de los modos que lo necesitan. */
     fun abrirAjustesSuperposicion() {
         abrirAjuste(AjustesDelSistema.intentSuperposicion(paquete))
     }
@@ -280,13 +281,14 @@ data class EstadoDiagnostico(
 
     /**
      * true si con el modo guardado queda algún permiso sin conceder que impida arrancar las apps: el
-     * de notificaciones (Android 13 o superior) o, en el modo automático, el de superposición, que
-     * es el único que lo usa. Es la misma comprobación que detalla la pantalla de diagnóstico,
-     * resumida en una sola pregunta para que la pantalla principal pueda avisar sin repetirla.
+     * de notificaciones (Android 13 o superior) o, en los modos que la usan
+     * ([ModoArranque.CONFIRMAR] y [ModoArranque.AUTOMATICO]), el de superposición. Es la misma
+     * comprobación que detalla la pantalla de diagnóstico, resumida en una sola pregunta para que la
+     * pantalla principal pueda avisar sin repetirla.
      *
      * @param modo el modo de arranque guardado.
      */
     fun tienePermisosPendientes(modo: ModoArranque): Boolean =
         (notificacionesExigidas && !notificacionesPermitidas) ||
-            (modo == ModoArranque.AUTOMATICO && !superposicionPermitida)
+            (modo.necesitaSuperposicion && !superposicionPermitida)
 }

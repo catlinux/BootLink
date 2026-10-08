@@ -5,6 +5,34 @@ y versionado según [SemVer](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+## [0.5.0] - 2026-10-08
+
+### Añadido
+
+- Tercer modo de arranque, «Preguntar al arrancar», y nuevo modo predeterminado de las instalaciones
+  nuevas: cuando el teléfono termina de arrancar, el servicio abre `ConfirmacionActivity`, una
+  actividad con interfaz que muestra un diálogo centrado con dos botones, «Abrir» —lanza las apps
+  configuradas y se cierra— y «Cancelar» —se cierra sin abrir nada—. Es el modo más explícito de los
+  tres: se ve que el arranque ha ocurrido sin depender de que el usuario toque una notificación ni de
+  que las apps se abran por sorpresa. `EstrategiaConfirmacion` es la tercera implementación de
+  `EstrategiaLanzamiento`, `ModoArranque` pasa a tener tres valores (`CONFIRMAR`, `NOTIFICACION` y
+  `AUTOMATICO`) con la propiedad `necesitaSuperposicion`, y `AppLauncher.lanzarAhora()` gana un
+  segundo camino: hasta ahora solo lo usaba el aviso de un toque.
+- El diálogo se declara en el manifiesto con `excludeFromRecents` y `taskAffinity` vacío (no deja
+  entrada en «recientes» ni se mezcla con la tarea de la pantalla principal) y usa un tema de ventana
+  translúcido, para que lo que se vea sea el diálogo y no una pantalla de la app.
+
+### Cambiado
+
+- El modo de confirmación usa el mismo permiso de superposición que el automático, porque Android
+  solo deja abrir actividades desde segundo plano a quien tiene una ventana visible —aquí, la propia
+  actividad del diálogo—; si falta, se recurre al aviso de un toque en lugar de fallar en silencio.
+- Los tres modos de la pantalla de ajustes se llaman ahora «Preguntar al arrancar», «Aviso discreto»
+  (antes «Avisarme con una notificación») y «Automático» (antes «Abrirlas automáticamente»), y cada
+  uno lleva debajo una frase que explica qué hace y qué permiso necesita.
+- El aviso de permiso de superposición de los ajustes y la comprobación del diagnóstico salen también
+  con el modo de confirmación, no solo con el automático, porque los dos necesitan ese permiso.
+
 ## [0.4.2] - 2026-10-08
 
 ### Añadido

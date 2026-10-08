@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Manifiesto de la app: la pantalla principal, el receptor de arranque con su servicio en primer
-  plano y la actividad invisible que abre las apps cuando el usuario toca el aviso.
+  plano y las dos actividades que dan sentido a los modos de arranque: la invisible, que abre las
+  apps cuando el usuario toca el aviso, y la del diálogo, que se lo pregunta al arrancar.
 
   Nunca se declarará el permiso restringido de Google Play que permite consultar todos los
   paquetes instalados (exige una declaración con vídeo en la ficha de la tienda): el selector
@@ -27,8 +28,9 @@
     <!-- Permiso propio del tipo specialUse (Android 14 o superior). No sustituye al anterior. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
-    <!-- Ventanas superpuestas: es la vía del modo automático. El usuario lo concede a mano en los
-         ajustes del sistema y la app lo comprueba en tiempo de ejecución antes de usarlo. -->
+    <!-- Ventanas superpuestas: es la vía de los modos que abren actividades por su cuenta, el de
+         confirmación (la actividad del diálogo) y el automático (la ventana superpuesta). El usuario
+         lo concede a mano en los ajustes del sistema y la app lo comprueba antes de usarlo. -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <!-- Aviso de arranque en Android 13 o superior: sin este permiso no se puede avisar al usuario,
@@ -73,6 +75,27 @@
             android:noHistory="true"
             android:taskAffinity=""
             android:theme="@style/Theme.BootLink.Lanzador" />
+
+        <!--
+          Actividad con interfaz del modo de confirmación: la abre el servicio de arranque y muestra
+          un diálogo centrado que pregunta si abrir las apps configuradas. Si el usuario pulsa
+          «Abrir», abre las apps con AppLauncher.lanzarAhora() y se cierra; si cancela, se cierra
+          sin abrir nada.
+          - exported="false": solo la abre BootLink.
+          - taskAffinity="": no se mezcla con la tarea de la pantalla principal.
+          - excludeFromRecents="true": es una pregunta de una sola vez, así que no deja una entrada
+            propia en «recientes».
+          - Sin noHistory (a diferencia de la actividad anterior): si el usuario deja el diálogo sin
+            contestar y abre otra cosa, al volver tiene que seguir viéndolo.
+          - Tema translúcido, porque lo que se ve es el diálogo de Compose y no una pantalla entera:
+            así no parece que la app haya tomado el control del teléfono.
+        -->
+        <activity
+            android:name=".arranque.ConfirmacionActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:taskAffinity=""
+            android:theme="@style/Theme.BootLink.Dialogo" />
 
         <!--
           Receptor del arranque del teléfono. Atiende las tres acciones que usan los fabricantes:

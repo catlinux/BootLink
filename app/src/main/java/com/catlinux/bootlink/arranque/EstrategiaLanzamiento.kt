@@ -14,11 +14,15 @@ internal const val ETIQUETA_ARRANQUE = "BootLinkArranque"
  * Cómo se consigue que el teléfono permita abrir las apps configuradas.
  *
  * Android bloquea por defecto que una app en segundo plano lance la actividad de otra app
- * (*Background Activity Launch*). Solo hay dos vías válidas, y esta interfaz es lo único que
+ * (*Background Activity Launch*). Hay tres vías válidas, y esta interfaz es lo único que
  * [AppLauncher] conoce de ellas:
  *
  * - [EstrategiaNotificacion]: se avisa con una notificación y las apps se abren cuando el usuario
  *   la toca. No necesita permisos especiales y es la que admite Google Play sin preguntas.
+ * - [EstrategiaConfirmacion]: se abre un diálogo que pregunta si abrir las apps; si el usuario
+ *   acepta, las abre una actividad de BootLink ([ConfirmacionActivity]), que ya está en primer
+ *   plano. Necesita el permiso de superposición, que es lo que permite abrir esa actividad desde
+ *   segundo plano.
  * - [EstrategiaOverlay]: se muestra una ventana superpuesta de tipo
  *   [android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY] y, mientras es visible, la
  *   app puede lanzar las demás. Necesita el permiso de superposición.
@@ -34,8 +38,9 @@ interface EstrategiaLanzamiento {
      * @param lanzarApps secuencia real de apertura: abre las apps una detrás de otra, en orden y
      *   con su retardo. La estrategia la ejecuta cuando el teléfono ya está en condiciones de
      *   permitirlo (en el modo automático, cuando la ventana superpuesta es visible) y no la toca
-     *   en absoluto en el modo de notificación, porque ahí el que abre BootLink es el usuario al
-     *   tocar el aviso, y entonces la secuencia la lanza [LanzadorActivity].
+     *   cuando la decisión es del usuario: en el modo de notificación, porque el que abre BootLink
+     *   es él al tocar el aviso ([LanzadorActivity]), y en el de confirmación, porque primero tiene
+     *   que contestar al diálogo ([ConfirmacionActivity]).
      * @return qué ha pasado, para poder registrarlo y, más adelante, mostrarlo en el diagnóstico.
      */
     suspend fun lanzar(lanzarApps: suspend () -> Unit): ResultadoLanzamiento
@@ -57,4 +62,11 @@ enum class ResultadoLanzamiento {
      * superior concede el usuario. La pantalla de diagnóstico lo reflejará.
      */
     SIN_PERMISO_NOTIFICACIONES,
+
+    /**
+     * Se ha preguntado al usuario con un diálogo ([ConfirmacionActivity]) y todavía no ha
+     * contestado: las apps se abrirán solo si pulsa «Abrir». Es el desenlace del modo de
+     * confirmación, el único en el que la decisión no la toma ni BootLink ni una notificación.
+     */
+    ESPERANDO_CONFIRMACION,
 }
