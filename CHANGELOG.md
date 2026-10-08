@@ -5,6 +5,8 @@ y versionado según [SemVer](https://semver.org/lang/es/).
 
 ## [Sin publicar]
 
+## [0.2.0] - 2026-10-08
+
 ### Añadido
 
 - Plan de implementación en `.agents/plans/bootlink/bootlink.PLAN.md`.
